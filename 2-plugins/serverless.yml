@@ -3,6 +3,9 @@ service:
 
 frameworkVersion: 1.23.0
 
+plugins:
+  - serverless-webpack
+
 provider:
   name: aws
   runtime: nodejs8.10
