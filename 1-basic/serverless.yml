@@ -1,0 +1,20 @@
+service:
+  name: sls-workshop-basic
+
+frameworkVersion: 1.23.0
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  region: eu-west-1
+  stage: dev
+
+functions:
+  getUser:
+    handler: index.getUser
+    description: Get user by id
+    events:
+      - http:
+          path: user/{id}
+          method: get
+          cors: true
