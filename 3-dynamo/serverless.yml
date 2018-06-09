@@ -1,0 +1,55 @@
+service:
+  name: sls-workshop-dynamo
+
+frameworkVersion: 1.23.0
+
+plugins:
+  - serverless-webpack
+
+custom:
+  TABLE_NAME: users-${self:provider.stage}
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  region: ${opt:region, 'eu-west-1'}
+  stage: ${opt:stage, 'dev'}
+  environment:
+    STAGE: ${self:provider.stage}
+    REGION: ${self:provider.region}
+    TABLE_NAME: users-${self:provider.stage}
+    TABLE_NAME_2: ${self:custom.TABLE_NAME}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:GetItem
+      Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TABLE_NAME}"
+
+functions:
+  getUser:
+    handler: index.getUser
+    description: Get user by id
+    events:
+      - http:
+          path: user/{id}
+          method: get
+          cors: true
+
+resources:
+  Resources:
+    UsersDynamoDB:
+      Type: "AWS::DynamoDB::Table"
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: "Id"
+            AttributeType: "N"
+        KeySchema:
+          -
+            AttributeName: "Id"
+            KeyType: "HASH"
+        TableName: "${self:custom.TABLE_NAME}"
+        ProvisionedThroughput:
+          ReadCapacityUnits: '5'
+          WriteCapacityUnits: '5'
