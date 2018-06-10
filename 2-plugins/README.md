@@ -10,5 +10,5 @@
 ## How do we add plugins?
 
 * Add webpack plugin
-* Add webpack config with babel loader
+* Tweak webpack config
 * `sls deploy -f getUser`
